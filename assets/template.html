@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<!--
+  博客译制 HTML 模板 —— 复刻博客式阅读体验的窄栏排版。
+  使用方式：复制本文件，替换 <article> 内的内容，<head> 的 CSS 通常无需改动。
+
+  元素词汇表（正文各块按原文结构映射到这些标签）：
+    <h1>             文章主标题（中文译名）
+    <div class=meta> 原文出处 / 作者 / 日期 / "中文翻译版" 说明
+    <h2>             章节标题
+    <p>              正文段落；段内可含 <a> 链接、<code> 行内代码、<br> 软换行
+    <ul> / <ol>      无序 / 有序列表
+    <blockquote class=callout>  定义式引用 / 提示块；术语用 <span class=term>
+    <pre><code>      代码块、目录树、配置示例（保留原样不译标识符）
+    <figure>         配图：直接放 <img>（必填 alt）；有图注时加 <figcaption>。
+                     点击图片在页内放大查看（lightbox 已内置），不跳转外部
+    <div class=endnote>  文末译注
+
+  图片：先用本地相对路径（如 src="xxx.assets/01.jpg"）写好，
+  全部内容完成后跑 scripts/inline_images.py 把图片内嵌成 base64 单文件。
+  所有 <a> 都加 target="_blank" rel="noopener"，保证链接可跳转。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文章标题</title>
+<style>
+  :root {
+    --ink: #0f1419;
+    --muted: #536471;
+    --link: #1d6fd6;
+    --line: #eaecef;
+    --callout-bg: #f4f7fb;
+    --callout-bar: #1d6fd6;
+    --code-bg: #f6f8fa;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #ffffff;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.78;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 692px; margin: 0 auto; padding: 56px 24px 96px; }
+
+  h1 {
+    font-size: 33px;
+    line-height: 1.32;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px;
+  }
+  h2 {
+    font-size: 23px;
+    line-height: 1.4;
+    font-weight: 800;
+    letter-spacing: -0.005em;
+    margin: 46px 0 14px;
+  }
+  p { margin: 0 0 22px; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .meta {
+    font-size: 14.5px;
+    color: var(--muted);
+    line-height: 1.7;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 22px;
+    margin-bottom: 30px;
+  }
+  .meta a { color: var(--muted); text-decoration: underline; }
+
+  ul, ol { margin: 0 0 22px; padding-left: 1.5em; }
+  li { margin: 6px 0; }
+
+  blockquote.callout {
+    margin: 24px 0;
+    padding: 14px 20px;
+    background: var(--callout-bg);
+    border-left: 4px solid var(--callout-bar);
+    border-radius: 6px;
+    font-size: 17px;
+  }
+  blockquote.callout .term { font-weight: 700; }
+
+  figure { margin: 30px 0; }
+  figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    cursor: zoom-in;
+  }
+  figcaption {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* 点击配图在页面内放大查看，不跳转外部页面 */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.92);
+    cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; align-items: center; justify-content: center; }
+  .lightbox img {
+    max-width: 96vw;
+    max-height: 96vh;
+    width: auto;
+    height: auto;
+    border-radius: 6px;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 0 0 22px;
+  }
+  code {
+    font-family: "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 14.5px;
+  }
+  pre code { font-size: 14px; line-height: 1.6; color: #1f2328; white-space: pre; }
+  p code, li code {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 5px;
+    font-size: 0.86em;
+  }
+
+  hr { border: none; border-top: 1px solid var(--line); margin: 44px 0; }
+
+  .endnote {
+    font-size: 14.5px;
+    color: var(--muted);
+    background: #fafbfc;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 18px;
+    line-height: 1.7;
+  }
+  .endnote a { color: var(--muted); text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    body { font-size: 17px; }
+    .wrap { padding: 36px 18px 72px; }
+    h1 { font-size: 27px; }
+    h2 { font-size: 21px; }
+  }
+</style>
+</head>
+<body>
+<article class="wrap">
+
+  <h1>文章主标题（中文译名）</h1>
+
+  <div class="meta">
+    原文：<a href="原文URL" target="_blank" rel="noopener">原文标题</a>
+    ·作者 作者名 ·发布于 YYYY-MM-DD<br>
+    本文为原文的中文翻译版，保留原文排版结构，仅供个人阅读参考。
+  </div>
+
+  <!-- 封面图（如有） -->
+  <figure>
+    <img src="xxx.assets/cover.jpg" alt="封面">
+  </figure>
+
+  <!-- ↓↓↓ 正文：按原文结构逐块替换为译文 ↓↓↓ -->
+
+  <p>正文段落。段内链接示例：<a href="链接URL" target="_blank" rel="noopener">链接文字</a>。</p>
+
+  <h2>章节标题</h2>
+
+  <blockquote class="callout">
+    <span class="term">术语</span>：术语的定义或一段提示。
+  </blockquote>
+
+  <ul>
+    <li>列表项</li>
+  </ul>
+
+  <figure>
+    <img src="xxx.assets/01.jpg" alt="配图描述">
+    <figcaption>图注</figcaption>
+  </figure>
+
+  <pre><code>代码块 / 目录树 / 配置示例</code></pre>
+
+  <!-- ↑↑↑ 正文结束 ↑↑↑ -->
+
+  <hr>
+
+  <div class="endnote">
+    译注：补充说明（如配图原为视频，可在顶部原文链接查看动态演示）。
+  </div>
+
+</article>
+
+<!-- 点击配图放大的浮层；图片 base64 内嵌后同样在文件内部，不依赖网络 -->
+<div class="lightbox" id="lightbox"><img alt=""></div>
+<script>
+  (function () {
+    var box = document.getElementById('lightbox');
+    var boxImg = box.querySelector('img');
+    document.querySelectorAll('figure img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        boxImg.src = img.src;
+        boxImg.alt = img.alt;
+        box.classList.add('open');
+      });
+    });
+    box.addEventListener('click', function () { box.classList.remove('open'); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') box.classList.remove('open');
+    });
+  })();
+</script>
+</body>
+</html>
