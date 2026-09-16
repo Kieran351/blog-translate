@@ -15,7 +15,13 @@
 
 ## 安装
 
-这是一个 Claude Code 技能。把本仓库克隆为技能目录即可：
+使用 npx 安装（需已安装 Node.js）：
+
+```bash
+npx skills add Kieran351/blog-translate
+```
+
+也可以手动克隆到 Claude Code 技能目录：
 
 ```bash
 # 用户级（所有项目可用）
@@ -39,7 +45,7 @@ git clone https://github.com/Kieran351/blog-translate.git .claude/skills/blog-tr
 
 ```
 blog-translate/
-├── SKILL.md               技能说明 + 8 步工作流
+├── SKILL.md               获取原文、翻译成文与交付要求
 ├── scripts/
 │   └── inline_images.py   把本地图片转 base64，做成自包含单文件
 └── assets/
@@ -49,7 +55,7 @@ blog-translate/
 ## 工作流
 
 1. 拿到文章 URL
-2. 通过 web-access 技能用浏览器 CDP 抓取正文（结构化提取）
+2. 用可用的网页或浏览器工具提取正文结构；需要时使用登录态浏览器
 3. 抓取配图（滚动触发懒加载，只取正文区块）
 4. 保留原排版逐块翻译
 5. 套用 `template.html` 生成 HTML
@@ -62,9 +68,9 @@ blog-translate/
 ## 依赖
 
 - **Claude Code**
-- **web-access 技能** —— 负责浏览器 CDP 抓取（博客平台多需登录态 / 反爬）
+- **网页读取 / 浏览器工具** —— 提取正文、配图并渲染验证；可使用已安装的 web-access 技能
 - **Python 3** —— `inline_images.py` 仅使用标准库，无需额外安装
-- **Chrome** —— 开启 remote debugging，供 CDP 连接
+- **浏览器** —— 需要登录态时使用已登录的浏览器；通过 CDP 连接 Chrome 时需开启 remote debugging
 
 ## 单独使用内嵌脚本
 
